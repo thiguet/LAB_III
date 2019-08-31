@@ -1,5 +1,5 @@
 public class Vetor {
-	 public static final int TAMANHO = 10;
+	 private static int TAMANHO = 10;
 	 private static final int NOT_FOUND = -1;
 	 private int v [] = new int[TAMANHO]; // Armazena os elementos
 	 private int numElementos; // Informação sobre o número de elementos inseridos
@@ -17,8 +17,45 @@ public class Vetor {
 		 return Vetor.TAMANHO; 
 	 }
 	 
+	 private void extendArrayToV(int[] aux) {
+		 for(int i = 0 ; i < aux.length; i++) {
+			 this.v[i] = aux[i];
+		 }
+	 }
+	 
 	 public void insereNoFinal(int novoElemento) {
-		 v[this.numElementos++] = novoElemento;
+		 if((this.numElementos + 1) > Vetor.TAMANHO) {
+			 Vetor.TAMANHO *= 2; 
+			 int[] aux = this.v;
+			 this.v = new int [Vetor.TAMANHO];
+			 this.extendArrayToV(aux);
+		 } else {
+			 v[this.numElementos++] = novoElemento;	 
+		 }
+	 }
+	 
+	 public int[] removerElemento(int elemento) {
+		 int cont = 0;
+		 int[] result = null;
+		 
+		 for(int i = 0; i < Vetor.TAMANHO ; i++) {
+			 if(this.v[i] == elemento)
+				 cont++;
+		 }
+		 
+		 if(cont > 0) {
+			 result = new int [cont];
+			 for(int j = 0 ; j < cont; j++) {
+				 result[j] = elemento;
+			 }
+			 // Fix array positions: 
+			 
+			 	
+			 
+		 } 
+		 
+		 
+		 return result;
 	 }
 	 
 	 public int posicaoDe (int elemento) { 
