@@ -39,9 +39,11 @@ public class Vetor {
 		 int[] result = null;
 		 
 		 for(int i = 0; i < Vetor.TAMANHO ; i++) {
-			 if(this.v[i] == elemento)
+			 if(this.v[i] == elemento) {
 				 cont++;
-		 }
+				 this.v[i] = -1;
+			 }
+		}
 		 
 		 if(cont > 0) {
 			 result = new int [cont];
@@ -50,7 +52,7 @@ public class Vetor {
 			 }
 			 // Fix array positions: 
 			 
-			 	
+			 
 			 
 		 } 
 		 
