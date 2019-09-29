@@ -6,38 +6,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OccurrenceDAO extends RAFDAO<Occurrence> {
-
+	protected final String INVALID_KEY = "A chave informada para acessar as ocorrêcias não é válida!";
+	
 	public OccurrenceDAO(String path) throws Exception {
 		super(path);
-		this.tamRegistros = (Integer.SIZE / 8);
+		this.regsBytesSize = (Integer.SIZE / 8);
 	}
 
 	@Override
-	public void appendData(Occurrence data) {
-		int pos = this.tamCabecalho + (this.numRegistros * this.tamRegistros);
+	public void appendData(Occurrence data) throws Exception {
+		int pos = this.headerBytesSize + (this.regsAmount * this.regsBytesSize);
 
-		try {
-			this.file.seek(pos);
-			this.file.writeInt(data.getFileId());
-			this.file.seek(0);
-			this.file.writeInt(++this.numRegistros);
-		} catch (Exception e) {
-			System.out.println("Não foi possível salvar as ocorrências! " + e.getMessage());
-			System.exit(0);
-			e.printStackTrace();
-		}
+		this.file.seek(pos);
+		this.file.writeInt(data.getFileId());
+		this.file.seek(0);
+		this.file.writeInt(++this.regsAmount);
 	}
 
 	@Override
-	public Occurrence getData(int key) {
+	public Occurrence getData(int key) throws Exception {
 		Occurrence occ = null;
-		if (key >= this.numRegistros) 
-			return null;
-		
-		int pos = this.tamCabecalho + (key * this.tamRegistros);
+
+		int pos = this.getFilePosition(key);
 		
 		try {
-			for(int i = 0; i < this.numRegistros; i++) {
+			for(int i = 0; i < this.regsAmount; i++) {
 				file.seek(pos);
 				occ = new Occurrence();
 				occ.setFileId(file.readInt());
@@ -57,8 +50,8 @@ public class OccurrenceDAO extends RAFDAO<Occurrence> {
 		int pos;
 		
 		try {
-			for(int i = 0; i < this.numRegistros; i++) {
-				pos = this.tamCabecalho + (i * this.tamRegistros);
+			for(int i = 0; i < this.regsAmount; i++) {
+				pos = this.headerBytesSize + (i * this.regsBytesSize);
 				file.seek(pos);
 				aux = new Occurrence();
 				aux.setFileId(file.readInt());
@@ -74,9 +67,9 @@ public class OccurrenceDAO extends RAFDAO<Occurrence> {
 
 	@Override
 	public boolean setData(Occurrence data, int key) {
-		int pos = this.tamCabecalho + (key * this.tamRegistros);
+		int pos = this.headerBytesSize + (key * this.regsBytesSize);
 
-		if(key >= this.numRegistros)
+		if(key >= this.regsAmount)
 			return false;
 		
 		try {

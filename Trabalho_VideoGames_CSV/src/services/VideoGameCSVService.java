@@ -10,9 +10,19 @@ import dao.RAFDAO;
 import dao.VideoGameDAO;
 import model.VideoGame;
 
-public class VideoGameService extends ACSVService<VideoGame> {
-	public VideoGameService() {
+public class VideoGameCSVService implements CSVService<VideoGame> {
+	protected String pathToCSV;
+	
+	public VideoGameCSVService() {
 		this.pathToCSV = ".\\data\\vgsales.csv";
+	}
+	
+	public String getPathToCSV() {
+		return pathToCSV;
+	}
+	
+	public void setPathToCSV(String pathToCSV) {
+		this.pathToCSV = pathToCSV;
 	}
 	
 	@Override
@@ -58,6 +68,5 @@ public class VideoGameService extends ACSVService<VideoGame> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}				
-	}
-	
+	}	
 }

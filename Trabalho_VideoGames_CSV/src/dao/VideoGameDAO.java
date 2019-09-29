@@ -14,7 +14,7 @@ public class VideoGameDAO extends RAFDAO<VideoGame> {
 
 	public VideoGameDAO (String path) throws Exception {
 		super(path);
-		this.tamRegistros = 
+		this.regsBytesSize = 
 				(Integer.SIZE / 8) + // Rank 
 				NAME_MAX_SIZE      + // Name     
 				PLATFORM_MAX_SIZE  + // Platform
@@ -29,7 +29,7 @@ public class VideoGameDAO extends RAFDAO<VideoGame> {
 	}
 
 	public void appendData(VideoGame videoGame) {
-		int pos = this.tamCabecalho + (this.numRegistros * this.tamRegistros);
+		int pos = this.headerBytesSize + (this.regsAmount * this.regsBytesSize);
 
 		try {
 			int posName 		= pos + (Integer.SIZE / 8),
@@ -57,8 +57,8 @@ public class VideoGameDAO extends RAFDAO<VideoGame> {
 			file.writeDouble(videoGame.getGlobalSales());
 						
 			file.seek(0);
-			this.numRegistros += 1;
-			file.writeInt(this.numRegistros);
+			this.regsAmount += 1;
+			file.writeInt(this.regsAmount);
 		} catch (IOException e) {
 			System.out.println("Não foi possível salvar o vídeo game! " + e.getMessage());
 			System.exit(0);
@@ -68,10 +68,10 @@ public class VideoGameDAO extends RAFDAO<VideoGame> {
 	public VideoGame getData(int key) {
 		VideoGame aux = null;
 		
-		if (key >= this.numRegistros)
+		if (key >= this.regsAmount)
 			return null;
 		
-		int pos = this.tamCabecalho + (key * this.tamRegistros);
+		int pos = this.headerBytesSize + (key * this.regsBytesSize);
 			
 		try {
 			aux = new VideoGame();
@@ -111,7 +111,7 @@ public class VideoGameDAO extends RAFDAO<VideoGame> {
 		List<VideoGame> videoGames = new ArrayList<VideoGame>();
 		VideoGame aux = null;
 		
-		int max = this.numRegistros;
+		int max = this.regsAmount;
 		int pos,
 			posPlatform,
 			posYear,
@@ -122,7 +122,7 @@ public class VideoGameDAO extends RAFDAO<VideoGame> {
 		try {
 			aux = new VideoGame();
 			for(int i = 0;  i < max; i++) {
-				pos 			= this.tamCabecalho + (i * this.tamRegistros);
+				pos 			= this.headerBytesSize + (i * this.regsBytesSize);
 				posPlatform  	= pos + (Integer.SIZE / 8) + NAME_MAX_SIZE;
 				posYear 	 	= posPlatform + PLATFORM_MAX_SIZE;
 				posGenre 	 	= posYear + (Integer.SIZE / 8);

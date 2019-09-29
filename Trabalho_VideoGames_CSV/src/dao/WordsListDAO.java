@@ -8,61 +8,59 @@ import model.Occurrence;
 import model.Word;
 
 public class WordsListDAO extends RAFDAO<Word> {
-	private static final int WORD_SIZE = 30;
+	private static final int WORD_MAX_SIZE = 30;
 	private RAFDAO<Occurrence> occDAO;
 	
 	public WordsListDAO(String path) throws Exception {
 		super(path);
-		this.tamRegistros = WordsListDAO.WORD_SIZE;
+		this.regsBytesSize = WordsListDAO.WORD_MAX_SIZE;
 	}
 
-	private void saveOccurrences(Word word) throws Exception {
-		int size = 0;
-		if(word.getOccurrencies() != null)
-			size = word.getOccurrencies().size();
+	private void saveWordOccurrences(Word word) throws Exception {
+		int occSize = 0;
+
+		occSize = word.getOccurrencies().size();
 		
 		this.occDAO.openFile();
-		for(int j = 0; j < size; j++) {
+		for(int j = 0; j < occSize; j++) {
 			this.occDAO.appendData(word.getOccurrencies().get(j));
 		}
 		this.occDAO.closeFile();
 	}
 	
 	private String getOccPath(String fileName) {
-		return Config.FILES_PATH + "\\occ\\occ" + fileName + ".bin";
+		return Config.FILES_PATH + 
+				"\\occ\\occ_" 	 + 
+				fileName 		 + 
+				".bin";
 	}
+
 	
 	@Override
-	public void appendData(Word word) {
-		int pos = this.tamCabecalho + (this.numRegistros * this.tamRegistros);
-		String occPath = null,
-			   str = word.getString();
+	public void appendData(Word word) throws Exception {
+		int pos = this.getLastFilePosition();
+		
+		String str = word.getString(),
+			   occFilePath = this.getOccPath(str);
 
-		try {
-			this.file.seek(pos);
-			this.file.writeUTF(str);
-				
-			occPath = this.getOccPath(str);
-			this.occDAO = new OccurrenceDAO(occPath);
+		this.file.seek(pos);
+		this.file.writeUTF(str);
 			
-			this.saveOccurrences(word);
-			
-			file.seek(0);
-			file.writeInt(++this.numRegistros);
-		} catch (Exception e) {
-			System.out.println("Não foi possível salvar a palavra! " + e.getMessage());
-			System.exit(0);
-		} 
+		this.occDAO = new OccurrenceDAO(occFilePath);
+		this.saveWordOccurrences(word);
+		
+		file.seek(0);
+		file.writeInt(++this.regsAmount);
 	}
 
 	@Override
-	public Word getData(int key) {
+	public Word getData(int key) throws Exception {
 		Word aux = null;
 		
-		if (key >= this.numRegistros)
+		if (key >= this.regsAmount)
 			return null;
 		
-		int pos = this.tamCabecalho + (key * this.tamRegistros);
+		int pos = this.headerBytesSize + (key * this.regsBytesSize);
 		
 		try {
 			aux = new Word();
@@ -90,10 +88,10 @@ public class WordsListDAO extends RAFDAO<Word> {
 		int pos;
 		
 		try {
-			for(int i = 0; i < this.numRegistros - 1; i++) {
-				pos = this.tamCabecalho + (i * this.tamRegistros);
+			for(int i = 0; i < this.regsAmount - 1; i++) {
+				pos = this.headerBytesSize + (i * this.regsBytesSize);
 				aux = new Word();
-				pos += this.tamRegistros;
+				pos += this.regsBytesSize;
 				file.seek(pos);
 				aux.setString(file.readUTF());
 
@@ -116,11 +114,11 @@ public class WordsListDAO extends RAFDAO<Word> {
 
 	@Override
 	public boolean setData(Word word, int key) {
-		int pos = this.tamCabecalho + (key * this.tamRegistros);
+		int pos = this.headerBytesSize + (key * this.regsBytesSize);
 		String occPath = null,
 			   str = word.getString();
 		
-		if (key >= this.numRegistros) 
+		if (key >= this.regsAmount) 
 			return false;
 		
 		try {
@@ -130,7 +128,7 @@ public class WordsListDAO extends RAFDAO<Word> {
 			occPath = this.getOccPath(str);
 			this.occDAO = new OccurrenceDAO(occPath);
 			
-			this.saveOccurrences(word);
+			this.saveWordOccurrences(word);
 		} catch (Exception e) {
 			System.out.println("Não foi possível salvar a palavra! " + e.getMessage());
 			System.exit(0);

@@ -8,6 +8,5 @@ public class Config {
 	
 	public static final int HASH_PREFERRED_SIZE   	 = 16573;
 	
-	
 	private Config() {}
 }

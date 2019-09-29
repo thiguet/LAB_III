@@ -7,7 +7,7 @@ import java.io.IOException;
 import main.Config;
 
 public class StopWord {
-	public StopWord() {}
+	private StopWord() {}
 	
 	private static final String PATH_TO_CSV = Config.FILES_PATH + "stopWords.txt";
 	

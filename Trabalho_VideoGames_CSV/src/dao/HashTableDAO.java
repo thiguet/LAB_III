@@ -12,7 +12,7 @@ public class HashTableDAO extends RAFDAO<StringHash> {
 	
 	public HashTableDAO(String path) throws Exception {
 		super(path);
-		this.tamRegistros = this.STRING_SIZE + 
+		this.regsBytesSize = this.STRING_SIZE + 
 							(Integer.SIZE / 8);
 	}
 
@@ -25,12 +25,12 @@ public class HashTableDAO extends RAFDAO<StringHash> {
 			hashObjs.stream()
 					.forEach( h -> {
 						try {
-							int pos = this.tamCabecalho + (this.numRegistros * this.tamRegistros);
+							int pos = this.headerBytesSize + (this.regsAmount * this.regsBytesSize);
 							this.file.seek(pos);
 							this.file.writeUTF(h.getStr());
 							this.file.seek(pos + this.STRING_SIZE);
 							this.file.writeInt(h.getFileId());							
-							this.numRegistros++;
+							this.regsAmount++;
 						} catch (IOException e) {
 							e.printStackTrace();
 						}					
@@ -38,7 +38,7 @@ public class HashTableDAO extends RAFDAO<StringHash> {
 			);
 			
 			this.file.seek(0);
-			this.file.writeInt(this.numRegistros);
+			this.file.writeInt(this.regsAmount);
 			
 			this.closeFile();
 		} catch (Exception e) {
@@ -54,17 +54,17 @@ public class HashTableDAO extends RAFDAO<StringHash> {
 
 	@Override
 	public StringHash getData(int key) {
-		int pos = this.tamCabecalho + (0 * this.tamRegistros);
+		int pos = this.headerBytesSize + (0 * this.regsBytesSize);
 		StringHash strHash = new StringHash(Config.HASH_PREFERRED_SIZE);
 		try {
 			HashObj aux = null;
 			this.openFile();
 			
 			this.file.seek(pos);
-			int i = this.numRegistros - 1;
+			int i = this.regsAmount - 1;
 			while(i > -1) {
 				aux = new HashObj();
-				pos = this.tamCabecalho + (i * this.tamRegistros);
+				pos = this.headerBytesSize + (i * this.regsBytesSize);
 				
 				this.file.seek(pos);
 				aux.setStr(this.file.readUTF());
