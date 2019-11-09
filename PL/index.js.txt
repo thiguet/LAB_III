@@ -1,0 +1,39 @@
+function main(str) {
+  var result = [];
+  var strArr = str.split(""); // Cada letra é uma posição do vetor.
+  var test = [];
+  var remainingString;
+
+  // vai de a - z
+  // Pensar em uma estrutura circular para a permnutação.
+  // Pegar cada caracter, remover do vetor de opções.
+  // Ligar cada item pegado no passo anterior a cada elemento do vetor de opções.
+  // Pegar cada permutação possível de caracter de 2 caracteres, remover do vetor de opções.
+  // And So on...
+
+  for (var l = 0; l < strArr.length; l++) {
+    // for (var j = 0; j < str.length; j++) {
+    //   for (var i = 1; (j+i) < str.length; i++) {
+    //     test = str.substring(j, j+i);
+    //     for (var k = 0; k < str.length; k++) {
+    //       if (k >= j && k + 1 <= j + i) continue;
+    //       var aux = str.substring(j, j + i) + str.substring(k, k + 1);
+    //       result.push(aux);
+    //     }
+    //   }
+    // }
+  }
+
+  return result
+    .toString()
+    .split(",")
+    .join("<br/>");
+}
+
+// i é a quantidade de caracteres avaliados no primeiro instante.
+// j é a posição dos caracteres avaliados.
+// k é o índice de
+
+// l é o caracter a ser avaliado na string.
+
+document.getElementById("app").innerHTML = main("asd");
