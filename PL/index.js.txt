@@ -1,39 +1,60 @@
+import "./styles.css";
+
 function main(str) {
-  var result = [];
-  var strArr = str.split(""); // Cada letra é uma posição do vetor.
-  var test = [];
-  var remainingString;
+  const result = [];
+  let prefix = "";
+  let answer = -1;
 
-  // vai de a - z
-  // Pensar em uma estrutura circular para a permnutação.
-  // Pegar cada caracter, remover do vetor de opções.
-  // Ligar cada item pegado no passo anterior a cada elemento do vetor de opções.
-  // Pegar cada permutação possível de caracter de 2 caracteres, remover do vetor de opções.
-  // And So on...
+  const permutations = getPermutationsInString(str, prefix, result, str.length);
 
-  for (var l = 0; l < strArr.length; l++) {
-    // for (var j = 0; j < str.length; j++) {
-    //   for (var i = 1; (j+i) < str.length; i++) {
-    //     test = str.substring(j, j+i);
-    //     for (var k = 0; k < str.length; k++) {
-    //       if (k >= j && k + 1 <= j + i) continue;
-    //       var aux = str.substring(j, j + i) + str.substring(k, k + 1);
-    //       result.push(aux);
-    //     }
-    //   }
-    // }
+  for (var i = 0; i < permutations.length; i++) {
+    if (isPalindrome(permutations[i]) === 1) {
+      answer = 1;
+      break;
+    }
   }
 
-  return result
-    .toString()
-    .split(",")
-    .join("<br/>");
+  return answer;
 }
 
-// i é a quantidade de caracteres avaliados no primeiro instante.
-// j é a posição dos caracteres avaliados.
-// k é o índice de
+function getPermutationsInString(remainingStr, prefix, result, maxLength) {
+  if (remainingStr.length > 2) {
+    for (var j = 0; j < remainingStr.length; j++) {
+      if (remainingStr.length === maxLength) prefix = "";
+      var strArrAux = remainingStr.split("");
+      var spliced = strArrAux.splice(j, 1);
+      var remainingElements = strArrAux.join("");
+      getPermutationsInString(
+        remainingElements,
+        prefix + spliced,
+        result,
+        maxLength
+      );
+    }
+  } else {
+    result.push(prefix + remainingStr);
+    result.push(
+      prefix +
+        remainingStr
+          .split("")
+          .reverse()
+          .join("")
+    );
+  }
 
-// l é o caracter a ser avaliado na string.
+  return result;
+}
 
-document.getElementById("app").innerHTML = main("asd");
+function isPalindrome(str) {
+  var resp = -1;
+  for (var i = 0; i < str.length / 2; i++) {
+    if (str[i] === str[str.length - i - 1]) {
+      resp = 1;
+    } else {
+      return -1;
+    }
+  }
+  return resp;
+}
+
+document.getElementById("app").innerHTML = main("adsadf");
